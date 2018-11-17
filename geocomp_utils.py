@@ -7,41 +7,41 @@ from scipy import fftpack
 import math
 
 def sum(x):
-    return np.sum(x)
+    return float(np.sum(x))
 
 def mean(x):
-    return np.mean(x)
+    return float(np.mean(x))
 
 def sd(x):
     y = np.std(x)
     if not is_valid_num(y):
         print('sd: %f'%y)
-    return y
+    return float(y)
 
 def iqr(x):
     y = np.subtract(*np.percentile(x,[75,25]))
     if not is_valid_num(y):
         print('iqr: %f'%y)
-    return y
+    return float(y)
 
     
 def percentile(x, p):
     y = np.percentile(x, p)
     if np.isnan(y).any() or np.isinf(y).any():
-        print('perc: '+str(np.argwhere(np.isnan(y))))
+        print('percentile: %f'%str(np.argwhere(np.isnan(y))))
     return y
 
 def peak2peak_amp(x):
     y = np.max(x) - np.min(x)
     if not is_valid_num(y):
         print('peak2peak: %f'%y)
-    return y
+    return float(y)
 
 def power(x):
     y = np.sum(np.square(x))
     if not is_valid_num(y):
         print('power: %f'%y)
-    return y
+    return float(y)
     
 def log_power(x):
     printed = False
@@ -54,7 +54,7 @@ def log_power(x):
             printed = True
     if not is_valid_num(log_power):
         print('log_power: %f'%log_power)
-    return log_power
+    return float(log_power)
 
 def lag_one_autocorr(x, m=None):
     num = 0
@@ -66,7 +66,7 @@ def lag_one_autocorr(x, m=None):
         i += 1
     denom = np.sum(np.square(np.subtract(x,m)))
     if denom > 0:
-   	    return num/denom
+   	    return float(num/denom)
     else:
         return 0
 
@@ -74,7 +74,7 @@ def kurtosis(x):
     y = stats.kurtosis(x)
     if not is_valid_num(y):
         print('kurt: %f'%y)
-    return y
+    return float(y)
 
 def skewness(x, m=None):
     if m is None:
@@ -82,7 +82,7 @@ def skewness(x, m=None):
     num = np.sum(np.power(np.subtract(x,m),3))/len(x)
     denom = np.power(np.sqrt(np.sum(np.square(np.subtract(x,m)))/(len(x)-1)), 3)
     if denom > 0:
-    	return num/denom
+    	return float(num/denom)
     else:
         return 0
 
@@ -90,7 +90,7 @@ def corr(a,b):
     y = np.corrcoef(a,b)[0,1]
     if not is_valid_num(y):
         print('corr: %f'%y)
-    return y
+    return float(y)
 
 def zero_cross(x):
     count = 0
@@ -156,7 +156,7 @@ def mean_abs_dev(x):
     y = np.mean(np.subtract(x, m))
     if not is_valid_num(y):
         print('mean_abs_dev: %f'%y)
-    return y
+    return float(y)
     
 def spec_centroid(x):
     i = range(x)
@@ -187,108 +187,48 @@ def rms_vector(tw):
     rms = np.array(rms)
     return rms
 
-def get_time_features(tw):
+def is_valid_num(x):
+    if not np.isnan(x) and not np.isinf(x):
+        return True
+    else:
+        return False
+
+
+def get_time_features(data):
     features = []
-    x = tw['x'].values+0.001
-    y = tw['y'].values+0.001
-    z = tw['z'].values+0.001
-    m = mag(x,y,z) 
-        
-    ax = x[int(len(x)/2)]
-    ay = y[int(len(y)/2)]
-    az = z[int(len(z)/2)]    
+    data = data+0.001 
     
-    #if indx == 0:
-     
-    features.append(sum(x)) #0
-    features.append(sum(y)) #1
-    features.append(sum(z)) #2
-    features.append(sum(m)) #3 
-    #elif indx == 1:
-    features.append(mean(x)) #4
-    features.append(mean(y)) #5
-    features.append(mean(z)) #6
-    features.append(mean(m)) #7    
-    #elif indx == 2:
-    features.append(sd(x)) #8
-    features.append(sd(y)) #9 H
-    features.append(sd(z)) #10
-    features.append(sd(m)) #11
-    #elif indx == 3:
-    features.append(iqr(x)) #12
-    features.append(iqr(y)) #13 H
-    features.append(iqr(z)) #14
-    features.append(iqr(m)) #15
-    #elif indx == 4:
-    features.extend(percentile(x, [10,25,50,75,90])) #13 - 17
-    features.extend(percentile(y, [10,25,50,75,90])) #18 - 22
-    features.extend(percentile(z, [10,25,50,75,90])) #23 - 27
-    features.extend(percentile(m, [10,25,50,75,90]))
-    #elif indx == 5:
-    features.append(peak2peak_amp(x)) #28
-    features.append(peak2peak_amp(y)) #29 
-    features.append(peak2peak_amp(z)) #30
-    features.append(peak2peak_amp(m)) 
-    #elif indx == 6:
-    features.append(power(x)) #31
-    features.append(power(y)) #32 H
-    features.append(power(z)) #33
-    features.append(power(m))
-    #elif indx == 7:
-    features.append(log_power(x)) #34
-    features.append(log_power(y)) #35 H
-    features.append(log_power(z)) #36
-    features.append(log_power(m))
-    #elif indx == 8:
-    features.append(lag_one_autocorr(x)) #37
-    features.append(lag_one_autocorr(y)) #38
-    features.append(lag_one_autocorr(z)) #39 H
-    features.append(lag_one_autocorr(m))
-    #elif indx == 9:
-    features.append(kurtosis(x)) #40
-    features.append(kurtosis(y)) #41
-    features.append(kurtosis(z)) #42
-    features.append(kurtosis(m))
-    #elif indx == 10:
-    features.append(skewness(x)) #43
-    features.append(skewness(y)) #44
-    features.append(skewness(z)) #45
-    features.append(skewness(m))
-    #elif indx == 11:
-    #features.append(corr(x,y)) #46
-    #features.append(corr(x,z)) #47
-    #features.append(corr(y,z)) #48 H
-    #elif indx == 12:
-    features.append(zero_cross(x)) #49
-    features.append(zero_cross(y)) #50 H
-    features.append(zero_cross(z)) #51
-    features.append(zero_cross(m))
-    #elif indx == 13:
-    features.append(energy(x,y, z))
-    #elif indx == 14:
-    features.append(root_square_mean(x))
-    features.append(root_square_mean(y))
-    features.append(root_square_mean(z))
-    features.append(root_square_mean(m))
-    #elif indx == 15:
-    features.append(np.max(x))
-    features.append(np.max(y))
-    features.append(np.max(z))
-    features.append(np.max(m))
-    #elif indx == 16:
-    features.append(np.min(x))
-    features.append(np.min(y))
-    features.append(np.min(z))        
-    features.append(np.min(m))
-    #elif indx == 17:
-    features.append(mean_abs_dev(x))
-    features.append(mean_abs_dev(y))
-    features.append(mean_abs_dev(z))
-    features.append(mean_abs_dev(m))
-    #elif indx == 18:
-    #features.append(rho(ax, ay, az))
-    #features.append(phi(ax, ay, az))
-    #features.append(theta(ax, ay, az))
+    features.append(sum(data)) #0
+    
+    features.append(mean(data)) #4
+  
+    features.append(sd(data)) #8
+
+    features.append(iqr(data)) #12
+
+    features.extend(percentile(data, [10,25,50,75,90])) #13 - 17
+
+    features.append(peak2peak_amp(data)) #28
+
+    features.append(power(data)) #31
+
+    features.append(log_power(data)) #34
+
+    features.append(lag_one_autocorr(data)) #37
+
+    features.append(kurtosis(data)) #40
+
+    features.append(skewness(data)) #43
+
+    features.append(median_cross(data)) #49
+    
+    features.append(root_square_mean(data))
+
+    features.append(np.max(data))
+
+    features.append(np.min(data))
+
+    features.append(mean_abs_dev(data))
     
     return features
 
@@ -309,31 +249,28 @@ def extract_time_features(time_windows, class_attr, n_comps=None):
     	return dataset, _class
     else:
         return dataset
-    
-def split_windows(_df, samp_rate, w, overlap_ratio=None, overlap_time=None, min_width=1):
+
+def split_windows(data, width, overlap_ratio=None, min_width=1):
     time_windows = []
-    width = samp_rate * w  
     increment = width
-    if overlap_time is not None:
-        increment = samp_rate * overlap_time
-    elif overlap_ratio is not None:
+    if overlap_ratio is not None:
         increment = int(width * (1-overlap_ratio))
         
     i = 0
-    N = len(_df.index)
+    N = len(data)
     while i < N:  
         start = i
         end = start+width
         if end > N:
             end = N
-        elif (N - end) < samp_rate * min_width:
+        elif (N - end) < min_width:
             end = N 
         #print str(start)+" "+str(end)
-        tw = _df.iloc[start:end]
-        classlabels = tw['class'].unique()
-        if len(classlabels) == 1:
-            time_windows.append(tw)
+        tw = data[start:end]
+        #classlabels = tw['class'].unique()
+        #if len(classlabels) == 1:
+        time_windows.append(tw)
     
         increment = end-start
-        i = int(i + (increment))
+        i = int(i + increment)
     return time_windows
