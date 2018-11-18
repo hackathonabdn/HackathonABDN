@@ -18,7 +18,12 @@ export class VisualComponent implements OnInit {
   loading: boolean;
   liveWindow: Extent;
   wells: string[]= [
-    "6307_d"
+    "6307_d",
+    "824_d",
+    "10446_d",
+    "10763_d",
+    "10764_d01",
+    "17698_d"
   ];
   selectedWell: string;
 
@@ -41,7 +46,9 @@ export class VisualComponent implements OnInit {
   }
 
   retrieveMatches(): void {
+    this.loading = true;
     this.dataService.retrieveMatches(this.selectedWell, this.window.From, this.window.To).then((response: PlotPoint[][]) => {
+      this.loading = false;
       this.comparisons = response;
     });
   }
@@ -53,8 +60,10 @@ export class VisualComponent implements OnInit {
   }
 
   async showWindow() {
+    this.loading = true;
     this.window = null;
     await delay(1000);
+    this.loading = false;
     this.window = this.liveWindow;
   }
 }
