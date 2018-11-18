@@ -11,6 +11,7 @@ import { DataService } from 'src/app/service/data-service.service';
 })
 export class PlotComponent implements OnInit {
   @Input() id: string;
+  @Input() selector: boolean;
   @Input() points: PlotPoint[];
 
   private x: any;
@@ -81,13 +82,14 @@ export class PlotComponent implements OnInit {
       .attr("transform", function (d) { return "translate(" + self.x(d[0]) + "," + self.y(d[1]) + ")"; })
       .attr("r", 0.75);
 
-
-    g.append("g")
-      .call(this.brush)
-      .call(this.brush.move, [min, max].map(this.x))
-      .selectAll(".overlay")
-      .each(function (d: any) { d.type = "selection"; }) // Treat overlay interaction as move.
-      .on("mousedown touchstart", brushcentered); // Recenter before brushing.
+    if (this.selector) {
+      g.append("g")
+        .call(this.brush)
+        .call(this.brush.move, [min, max].map(this.x))
+        .selectAll(".overlay")
+        .each(function (d: any) { d.type = "selection"; }) // Treat overlay interaction as move.
+        .on("mousedown touchstart", brushcentered); // Recenter before brushing.
+    }
 
     g.append("g")
       .attr("transform", "translate(0," + this.height + ")")

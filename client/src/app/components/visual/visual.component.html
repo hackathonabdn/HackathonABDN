@@ -1,11 +1,13 @@
-<div *ngIf="points.length > 0" class="row">
+<div class="row">
     <div class="col-md-12">
-        <button class="btn btn-sm btn-success">Show Window</button>
+        <button class="btn btn-sm btn-success" (click)="showWindow()">
+            Show Window
+        </button>
     </div>
-    <div class="col-md-12">
-        <plot id="points" [points]="points"></plot>
+    <div class="col-md-12" *ngIf="points.length > 0" >
+        <plot id="points" [selector]="true" [points]="points"></plot>
     </div>
-    <div class="col-md-12">
-        <plot id="window" [points]="points"></plot>
+    <div class="col-md-12" *ngIf="snapShot.length > 0">
+        <plot id="window" [selector]="false" [points]="snapShot"></plot>
     </div>
 </div>

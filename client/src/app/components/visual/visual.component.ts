@@ -12,6 +12,7 @@ import { PlotPoint } from 'src/app/canonicals/PlotPoint';
 export class VisualComponent implements OnInit {
   points: PlotPoint[] = [];
   window: PlotPoint[] = [];
+  snapShot: PlotPoint[] = [];
 
   constructor(
     private dataService: DataService) {
@@ -28,5 +29,13 @@ export class VisualComponent implements OnInit {
     this.dataService.getWindow().subscribe((response: PlotPoint[]) => {
       this.window = response;
     });
+  }
+
+  showWindow(): void {
+    if (this.snapShot.length) {
+      this.snapShot = [];
+    } else {
+      this.snapShot = this.window.slice();
+    }
   }
 }
