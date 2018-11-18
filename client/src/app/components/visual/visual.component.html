@@ -1,16 +1,37 @@
-<div class="row" *ngIf="points.length > 0">
-    <div class="col-md-12">
-        <button class="btn btn-sm btn-success" (click)="showWindow()">
-            Show Window
+<div class="row">
+    <div class="col-md-2">
+        <select [(ngModel)]="selectedWell" class="form-control">
+            <option [ngValue]="null">Select</option>
+            <option *ngFor="let w of wells" [ngValue]="w">{{w}}</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-sm btn-success" (click)="loadWell()">
+            Load Well
         </button>
-        <button class="btn btn-sm btn-primary ml-1" [disabled]="window == null" (click)="showWindow()">
-            Retrieve Matches
-        </button>
     </div>
-    <div class="col-md-12">
-        <plot id="points" [selector]="true" [points]="points"></plot>
+
+    <div class="mt-1" *ngIf="points.length > 0">
+        <div class="col-md-12">
+            <button class="btn btn-sm btn-success" (click)="showWindow()">
+                Show Window
+            </button>
+            <button class="btn btn-sm btn-primary ml-1" [disabled]="window == null" (click)="showWindow()">
+                Retrieve Matches
+            </button>
+        </div>
+        <div class="col-md-12">
+            <plot id="points" [selector]="true" [points]="points"></plot>
+        </div>
+        <div class="col-md-12" *ngIf="window">
+            <plot id="window" [selector]="false" [points]="points" [extent]="window"></plot>
+        </div>
+
+        <div *ngIf="comparisons.length > 0">
+            <div class="col-md-12" *ngFor="let comparison of comparisons;let i = index">
+                <plot [attr.id]="window+i" [selector]="false" [points]="comparison"></plot>
+            </div>
+        </div>
     </div>
-    <div class="col-md-12" *ngIf="window">
-        <plot id="window" [selector]="false" [points]="points" [extent]="window"></plot>
-    </div>
+
 </div>

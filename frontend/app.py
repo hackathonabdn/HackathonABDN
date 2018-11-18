@@ -8,7 +8,7 @@ app = Flask(__name__)
 def home():
     return 'Geological Formation' 
 
-@app.route('/get-plot')
+@app.route('/get-plot', methods=['POST', 'OPTIONS', 'GET'])
 def getplots():
     p = Well.from_las('static/las-files/6307_d.las')
     gr = p.data['GR']
@@ -36,7 +36,7 @@ def plot():
     plt.savefig('static/images.png')
     return render_template('base.html',name = 'plot', url='static/images.png')
     
-@app.route('/getplotdata/<wellname>')
+@app.route('/getplotdata/<wellname>', methods=['POST', 'OPTIONS', 'GET'])
 def getplotdata(wellname):
     p = Well.from_las('static/las-files/'+wellname+'.las')
     gr = p.data['GR']
@@ -45,7 +45,7 @@ def getplotdata(wellname):
     'depth': list(gr.basis)}
     return jsonify(payload)  
 
-@app.route('/retrieve/<wellname>/<fr>/<to>')
+@app.route('/retrieve/<wellname>/<fr>/<to>', methods=['POST', 'OPTIONS', 'GET'])
 def retrieve(wellname,fr,to):
     p = Well.from_las('static/las-files/'+wellname+'.las')
     gr = p.data['GR']
@@ -54,6 +54,13 @@ def retrieve(wellname,fr,to):
     'depth': list(gr.basis)}
     return jsonify(payload)
         
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response
+
 if __name__ == '__main__':
     app.run()
 

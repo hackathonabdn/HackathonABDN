@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './components/app/app.component';
 import { VisualComponent } from './components/visual/visual.component';
@@ -15,7 +15,7 @@ import { PlotComponent } from './components/plot/plot.component';
   ],
   imports: [
     HttpClientModule,
-    BrowserModule
+    BrowserModule,FormsModule 
   ],
   providers: [DataService],
   bootstrap: [AppComponent]

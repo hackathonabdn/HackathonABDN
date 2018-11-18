@@ -13,8 +13,14 @@ import { Extent } from 'src/app/canonicals/Extent';
 })
 export class VisualComponent implements OnInit {
   points: PlotPoint[] = [];
+  comparisons: PlotPoint[][] = [];
   window: Extent;
+  loading: boolean;
   liveWindow: Extent;
+  wells: string[]= [
+    "6307_d"
+  ];
+  selectedWell: string;
 
   constructor(
     private dataService: DataService) {
@@ -22,9 +28,22 @@ export class VisualComponent implements OnInit {
 
   ngOnInit() {
     this.observeWindow();
-    this.dataService.getPlot().then((response: PlotPoint[]) => {
+  }
+
+  loadWell(): void {
+    this.points = [];
+    this.comparisons = [];
+    this.loading = true;
+    this.dataService.getPlot(this.selectedWell).then((response: PlotPoint[]) => {
+      this.loading = false;
       this.points = response;
     }).catch((error) => console.log(error));
+  }
+
+  retrieveMatches(): void {
+    this.dataService.retrieveMatches(this.selectedWell, this.window.From, this.window.To).then((response: PlotPoint[][]) => {
+      this.comparisons = response;
+    });
   }
 
   observeWindow(): any {
