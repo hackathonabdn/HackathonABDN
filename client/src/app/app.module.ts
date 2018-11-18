@@ -1,18 +1,23 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppComponent } from './app.component';
-import { VisualComponent } from './visual/visual.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AppComponent } from './components/app/app.component';
+import { VisualComponent } from './components/visual/visual.component';
+import { DataService } from './service/data-service.service';
+import { PlotComponent } from './components/plot/plot.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    VisualComponent
+    VisualComponent,
+    PlotComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule
   ],
-  providers: [],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
