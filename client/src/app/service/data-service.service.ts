@@ -4,16 +4,17 @@ import { environment } from 'src/environments/environment';
 import { Plot } from '../canonicals/Plot';
 import { PlotPoint } from '../canonicals/PlotPoint';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Extent } from '../canonicals/Extent';
 
 @Injectable()
 export class DataService {
 
   private readonly getPlotApi: string = `assets/get-plot.json`;
-  private readonly windowSubj: BehaviorSubject<PlotPoint[]>;
+  private readonly windowSubj: BehaviorSubject<Extent>;
 
   constructor(
     private http: HttpClient) {
-      this.windowSubj  = new BehaviorSubject<PlotPoint[]>([]);
+      this.windowSubj  = new BehaviorSubject<Extent>({} as Extent);
   }
 
   async getPlot(): Promise<PlotPoint[]> {
@@ -29,11 +30,11 @@ export class DataService {
     });
   }
 
-  getWindow(): Observable<PlotPoint[]> {
+  getWindow(): Observable<Extent> {
     return this.windowSubj.asObservable();
   }
 
-  setWindow(points: PlotPoint[]): void {
-    this.windowSubj.next(points);
+  setWindow(window: Extent): void {
+    this.windowSubj.next(window);
   }
 }

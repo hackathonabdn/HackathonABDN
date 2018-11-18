@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Plot } from 'src/app/canonicals/Plot';
 import { PlotPoint } from 'src/app/canonicals/PlotPoint';
 import { DataService } from 'src/app/service/data-service.service';
+import { Extent } from 'src/app/canonicals/Extent';
 
 @Component({
   selector: 'plot',
@@ -13,6 +14,7 @@ export class PlotComponent implements OnInit {
   @Input() id: string;
   @Input() selector: boolean;
   @Input() points: PlotPoint[];
+  @Input() extent: Extent;
 
   private x: any;
   private y: any;
@@ -31,9 +33,15 @@ export class PlotComponent implements OnInit {
   }
 
   renderPlot(): void {
-    let max = Math.max(...this.points.map(x => x.x));
-    let min = Math.min(...this.points.map(x => x.x));
-    let data = this.points.map(point => [point.x, point.y]);
+    let section = this.points;
+
+    if (this.extent) {
+      section = this.points.filter(x => x.x >= this.extent.From && x.x <= this.extent.To);
+    }
+
+    let max = Math.max(...section.map(x => x.x));
+    let min = Math.min(...section.map(x => x.x));
+    let data = section.map(point => [point.x, point.y]);
 
     let randomX = d3.randomUniform(0, 10);
     let randomY = d3.randomNormal(0.5, 0.12);
@@ -50,13 +58,15 @@ export class PlotComponent implements OnInit {
     this.y = d3.scaleLinear().range([this.height, 0]);
 
     // Scale the range of the data
-    this.x.domain(d3.extent(this.points, function (d) { return d.x; }));
-    this.y.domain([0, d3.max(this.points, function (d) { return d.y; })]);
+    this.x.domain(d3.extent(section, function (d) { return d.x; }));
+    this.y.domain([0, d3.max(section, function (d) { return d.y; })]);
 
     let brushed: (xy, z) => void = () => {
       let extent = d3.event.selection.map(this.x.invert, this.x);
-      let window = this.points.filter(point => point.x > extent[0] && point.x <= extent[1]);
-      this.dataService.setWindow(window);
+      this.dataService.setWindow({
+        From: extent[0],
+        To: extent[1]
+      } as Extent);
       this.dot.classed("selected", function (d) { return extent[0] <= d[0] && d[0] <= extent[1]; });
     }
 

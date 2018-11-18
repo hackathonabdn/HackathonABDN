@@ -4,6 +4,7 @@ import { Plot } from '../../canonicals/Plot';
 import { DataService } from '../../service/data-service.service';
 import { PlotPoint } from 'src/app/canonicals/PlotPoint';
 import { delay } from 'q';
+import { Extent } from 'src/app/canonicals/Extent';
 
 @Component({
   selector: 'app-visual',
@@ -12,28 +13,28 @@ import { delay } from 'q';
 })
 export class VisualComponent implements OnInit {
   points: PlotPoint[] = [];
-  window: PlotPoint[] = [];
-  liveWindow: PlotPoint[] = [];
+  window: Extent;
+  liveWindow: Extent;
 
   constructor(
     private dataService: DataService) {
-    this.observeWindow();
-  }
-
-  observeWindow(): any {
-    this.dataService.getWindow().subscribe((response: PlotPoint[]) => {
-      this.liveWindow = response;
-    });
   }
 
   ngOnInit() {
+    this.observeWindow();
     this.dataService.getPlot().then((response: PlotPoint[]) => {
       this.points = response;
     }).catch((error) => console.log(error));
   }
 
+  observeWindow(): any {
+    this.dataService.getWindow().subscribe((response: Extent) => {
+      this.liveWindow = response;
+    });
+  }
+
   async showWindow() {
-    this.window = [];
+    this.window = null;
     await delay(1000);
     this.window = this.liveWindow;
   }
