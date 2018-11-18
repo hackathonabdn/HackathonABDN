@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Plot } from '../../canonicals/Plot';
 import { DataService } from '../../service/data-service.service';
 import { PlotPoint } from 'src/app/canonicals/PlotPoint';
+import { delay } from 'q';
 
 @Component({
   selector: 'app-visual',
@@ -12,11 +13,17 @@ import { PlotPoint } from 'src/app/canonicals/PlotPoint';
 export class VisualComponent implements OnInit {
   points: PlotPoint[] = [];
   window: PlotPoint[] = [];
-  snapShot: PlotPoint[] = [];
+  liveWindow: PlotPoint[] = [];
 
   constructor(
     private dataService: DataService) {
     this.observeWindow();
+  }
+
+  observeWindow(): any {
+    this.dataService.getWindow().subscribe((response: PlotPoint[]) => {
+      this.liveWindow = response;
+    });
   }
 
   ngOnInit() {
@@ -25,17 +32,9 @@ export class VisualComponent implements OnInit {
     }).catch((error) => console.log(error));
   }
 
-  observeWindow(): void {
-    this.dataService.getWindow().subscribe((response: PlotPoint[]) => {
-      this.window = response;
-    });
-  }
-
-  showWindow(): void {
-    if (this.snapShot.length) {
-      this.snapShot = [];
-    } else {
-      this.snapShot = this.window.slice();
-    }
+  async showWindow() {
+    this.window = [];
+    await delay(1000);
+    this.window = this.liveWindow;
   }
 }

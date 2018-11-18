@@ -7,7 +7,7 @@
     <div class="col-md-12" *ngIf="points.length > 0" >
         <plot id="points" [selector]="true" [points]="points"></plot>
     </div>
-    <div class="col-md-12" *ngIf="snapShot.length > 0">
-        <plot id="window" [selector]="false" [points]="snapShot"></plot>
+    <div class="col-md-12" *ngIf="window.length > 0">
+        <plot id="window" [selector]="false" [points]="window"></plot>
     </div>
 </div>
