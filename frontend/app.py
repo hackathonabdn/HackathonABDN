@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!' 
+def home():
+    return 'Geological Formation' 
 
 @app.route('/get-plot')
 def getplots():
@@ -25,9 +25,9 @@ def about(x,y):
 def gasoil():
     return render_template('gasoil.html')
 
-@app.route('/GeologicalFormation')
-def GFormation():
-    return render_template('geological-formation.html')
+@app.route('/Gformation')
+def Gformation():
+    return render_template('Gformation.html')
     
 @app.route('/plot')
 def plot():
@@ -36,6 +36,24 @@ def plot():
     plt.savefig('static/images.png')
     return render_template('base.html',name = 'plot', url='static/images.png')
     
+@app.route('/getplotdata/<wellname>')
+def getplotdata(wellname):
+    p = Well.from_las('static/las-files/'+wellname+'.las')
+    gr = p.data['GR']
+    gr [np.isnan(gr)] = 0
+    payload = {'curve': list(gr),
+    'depth': list(gr.basis)}
+    return jsonify(payload)  
+
+@app.route('/retrieve/<wellname>/<fr>/<to>')
+def retrieve(wellname,fr,to):
+    p = Well.from_las('static/las-files/'+wellname+'.las')
+    gr = p.data['GR']
+    gr [np.isnan(gr)] = 0
+    payload = {'curve': list(gr),
+    'depth': list(gr.basis)}
+    return jsonify(payload)
+        
 if __name__ == '__main__':
     app.run()
 
