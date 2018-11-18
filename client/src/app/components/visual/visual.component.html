@@ -3,6 +3,9 @@
         <button class="btn btn-sm btn-success" (click)="showWindow()">
             Show Window
         </button>
+        <button class="btn btn-sm btn-primary ml-1" [disabled]="window == null" (click)="showWindow()">
+            Retrieve Matches
+        </button>
     </div>
     <div class="col-md-12">
         <plot id="points" [selector]="true" [points]="points"></plot>

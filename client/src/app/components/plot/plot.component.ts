@@ -43,12 +43,8 @@ export class PlotComponent implements OnInit {
     let min = Math.min(...section.map(x => x.x));
     let data = section.map(point => [point.x, point.y]);
 
-    let randomX = d3.randomUniform(0, 10);
-    let randomY = d3.randomNormal(0.5, 0.12);
-    //let data = d3.range(800).map(function () { return [randomX(), randomY()]; });
-
     let svg = d3.select(`#${this.id}`).append("svg:svg").attr("width", 1110).attr("height", 200);
-    let margin = { top: 20, right: 10, bottom: 30, left: 10 };
+    let margin = { top: 20, right: 35, bottom: 30, left: 10 };
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     this.width = +svg.attr("width") - margin.left - margin.right;
@@ -84,18 +80,33 @@ export class PlotComponent implements OnInit {
 
     let self = this;
 
+    let line = d3.line()
+      .x(d => this.x(d[0]))
+      .y(d => this.y(d[1]));
+
     this.dot = g.append("g")
-      .attr("fill-opacity", 1)
-      .selectAll("circle")
-      .data(data)
-      .enter().append("circle")
-      .attr("transform", function (d) { return "translate(" + self.x(d[0]) + "," + self.y(d[1]) + ")"; })
-      .attr("r", 0.75);
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "#333")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", line);
+
+
+    // this.dot = g.append("g")
+    //   .attr("fill-opacity", 1)
+    //   .selectAll("circle")
+    //   .data(data)
+    //   .enter().append("circle")
+    //   .attr("transform", function (d) { return "translate(" + self.x(d[0]) + "," + self.y(d[1]) + ")"; })
+    //   .attr("r", 0.75);
 
     if (this.selector) {
       g.append("g")
         .call(this.brush)
-        .call(this.brush.move, [min, max].map(this.x))
+        .call(this.brush.move, [min, max/8].map(this.x))
         .selectAll(".overlay")
         .each(function (d: any) { d.type = "selection"; }) // Treat overlay interaction as move.
         .on("mousedown touchstart", brushcentered); // Recenter before brushing.
@@ -104,5 +115,9 @@ export class PlotComponent implements OnInit {
     g.append("g")
       .attr("transform", "translate(0," + this.height + ")")
       .call(d3.axisBottom(this.x));
+
+      g.append("g")
+      .attr("transform", "translate(" + this.width + ", 0)")
+      .call(d3.axisRight(this.y));
   }
 }
