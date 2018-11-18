@@ -1,0 +1,13 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-sm btn-success" (click)="showWindow()">
+            Show Window
+        </button>
+    </div>
+    <div class="col-md-12" *ngIf="points.length > 0" >
+        <plot id="points" [selector]="true" [points]="points"></plot>
+    </div>
+    <div class="col-md-12" *ngIf="window.length > 0">
+        <plot id="window" [selector]="false" [points]="window"></plot>
+    </div>
+</div>
